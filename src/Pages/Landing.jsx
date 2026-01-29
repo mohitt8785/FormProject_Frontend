@@ -39,7 +39,7 @@ const Landing = () => {
 
               {/* Title Section */}
               <div className="title-section">
-                <h2 className="main-title">Student Registration Portal</h2>
+                <h2 className="main-title">Client Registration Portal</h2>
                 <p className="main-subtitle">
                   Streamline your international education journey with our
                   advanced client management system

@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Navbar from "../Navbar/Navbar.jsx";
- import CameraInput from "./CameraInput.jsx";
+import CameraInput from "./CameraInput.jsx";
 import "./Admin.css";
 
 const VITE_API_URL_FORM = import.meta.env.VITE_API_URL_FORM;
@@ -52,34 +52,51 @@ const ClientDetail = () => {
   // ✅ Camera se naya photo capture karne ke liye
   const handleNewPhotoCapture = (file) => {
     setEditData({ ...editData, photo: file });
-    
+
     // Preview create karo
     const reader = new FileReader();
     reader.onloadend = () => {
       setNewPhotoPreview(reader.result);
     };
     reader.readAsDataURL(file);
-    
+
     console.log("New photo captured:", file);
   };
 
   const handleSaveEdit = async () => {
     try {
       setLoading(true);
-      
+
       const form = new FormData();
-      
-      // All fields append karo
+
+      // ✅ Only non-file fields append karo
       Object.keys(editData).forEach(key => {
-        if (key !== 'photo' && key !== 'biometric' && key !== '_id' && key !== 'createdAt' && key !== 'updatedAt' && key !== '__v') {
+        // Skip photo, biometric, aur MongoDB fields
+        if (
+          key !== 'photo' &&
+          key !== 'biometric' &&
+          key !== '_id' &&
+          key !== 'createdAt' &&
+          key !== 'updatedAt' &&
+          key !== '__v'
+        ) {
           form.append(key, editData[key]);
         }
       });
-      
-      // ✅ Photo append karo
+
+      // ✅ Photo separately handle karo
       if (editData.photo instanceof File) {
+        // Naya photo uploaded hai
         form.append('photo', editData.photo);
-        console.log("Uploading new photo");
+        console.log("✅ Uploading NEW photo file");
+      } else {
+        // Purana photo hai - DON'T append (backend pe already hai)
+        console.log("⏭️ Keeping existing photo");
+      }
+
+      // Optional: Biometric
+      if (editData.biometric instanceof File) {
+        form.append('biometric', editData.biometric);
       }
 
       const res = await axios.put(`${VITE_API_URL_FORM}/${id}`, form, {
@@ -90,13 +107,13 @@ const ClientDetail = () => {
       setIsEditing(false);
       setNewPhotoPreview(null);
       toast.success("✅ Client updated successfully");
-      
-      // Refresh to show new photo
+
+      // Refresh to show updated data
       fetchClientDetail();
-      
+
     } catch (err) {
       console.error("Error updating client:", err);
-      toast.error("❌ Failed to update client: " + err.message);
+      toast.error("❌ Failed to update client: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -137,8 +154,8 @@ const ClientDetail = () => {
     );
   }
 
-  const photoUrl = client.photo 
-    ? `${VITE_BASE_URL}/${client.photo.replace(/\\/g, "/")}` 
+  const photoUrl = client.photo
+    ? `${VITE_BASE_URL}/${client.photo.replace(/\\/g, "/")}`
     : null;
 
   return (
@@ -175,9 +192,9 @@ const ClientDetail = () => {
                     />
                   </div>
                 ) : (
-                  <div style={{ 
-                    width: '100%', 
-                    height: '300px', 
+                  <div style={{
+                    width: '100%',
+                    height: '300px',
                     background: 'var(--bg-primary)',
                     borderRadius: 'var(--border-radius-lg)',
                     display: 'flex',
@@ -201,9 +218,9 @@ const ClientDetail = () => {
                     style={{ border: newPhotoPreview ? '3px solid #667eea' : '3px solid var(--border-color)' }}
                   />
                   {newPhotoPreview && (
-                    <p style={{ 
-                      marginTop: '10px', 
-                      color: '#667eea', 
+                    <p style={{
+                      marginTop: '10px',
+                      color: '#667eea',
                       fontSize: '14px',
                       fontWeight: '600',
                       textAlign: 'center'
@@ -368,8 +385,8 @@ const ClientDetail = () => {
                   </div>
 
                   <div className="detail-actions">
-                    <button 
-                      className="btn btn-delete" 
+                    <button
+                      className="btn btn-delete"
                       onClick={() => {
                         setIsEditing(false);
                         setNewPhotoPreview(null);
@@ -377,8 +394,8 @@ const ClientDetail = () => {
                     >
                       ✕ Cancel
                     </button>
-                    <button 
-                      className="btn btn-edit" 
+                    <button
+                      className="btn btn-edit"
                       onClick={handleSaveEdit}
                       disabled={loading}
                     >

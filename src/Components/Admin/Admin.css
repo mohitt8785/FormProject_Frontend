@@ -714,6 +714,67 @@
     width: 100%;
   }
 
+
+
+  /* =========================
+   PDF DOWNLOAD BUTTON
+========================= */
+
+.btn-pdf {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-main);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-pdf:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-pdf:active {
+  transform: translateY(0);
+}
+
+.btn-pdf:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Header button group */
+.header-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .header-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .btn-pdf,
+  .btn-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
  /* =========================
    TABLE PHOTO STYLES
 ========================= */

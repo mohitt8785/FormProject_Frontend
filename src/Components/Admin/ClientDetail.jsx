@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf"; // ✅ Import jsPDF
 import Navbar from "../Navbar/Navbar.jsx";
 import CameraInput from "./CameraInput.jsx";
 import "./Admin.css";
@@ -36,6 +37,112 @@ const ClientDetail = () => {
     }
   };
 
+  // ✅ PDF Download Function
+  const handleDownloadPDF = async () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(20);
+      doc.setTextColor(102, 126, 234);
+      doc.text("CLIENT INFORMATION", 105, 20, { align: "center" });
+      
+      // Line
+      doc.setDrawColor(102, 126, 234);
+      doc.setLineWidth(0.5);
+      doc.line(20, 25, 190, 25);
+      
+      // Photo (if available)
+      const photoUrl = client.photo;
+      if (photoUrl) {
+        try {
+          // Convert photo to base64
+          const response = await fetch(photoUrl);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          
+          reader.onloadend = () => {
+            const base64data = reader.result;
+            doc.addImage(base64data, 'JPEG', 150, 35, 40, 40);
+            generatePDFContent(doc);
+          };
+          reader.readAsDataURL(blob);
+        } catch (error) {
+          console.error("Error loading photo:", error);
+          generatePDFContent(doc);
+        }
+      } else {
+        generatePDFContent(doc);
+      }
+      
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
+  const generatePDFContent = (doc) => {
+    let yPos = 40;
+    
+    // Helper function to add field
+    const addField = (label, value) => {
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(label + ":", 20, yPos);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(30, 41, 59);
+      doc.text(value || "N/A", 70, yPos);
+      
+      yPos += 10;
+    };
+    
+    // Personal Information
+    doc.setFontSize(14);
+    doc.setTextColor(102, 126, 234);
+    doc.text("Personal Details", 20, yPos);
+    yPos += 8;
+    
+    addField("Client Name", client.clientName);
+    addField("Father Name", client.fatherName);
+    addField("Gender", client.gender);
+    addField("Date of Birth", client.dob || "Not provided");
+    addField("Age", client.age?.toString());
+    
+    yPos += 5;
+    
+    // Contact Information
+    doc.setFontSize(14);
+    doc.setTextColor(102, 126, 234);
+    doc.text("Contact Details", 20, yPos);
+    yPos += 8;
+    
+    addField("Email", client.email);
+    addField("Phone", client.phone);
+    addField("Address", client.address);
+    addField("Country", client.country);
+    
+    yPos += 5;
+    
+    // Family Information
+    doc.setFontSize(14);
+    doc.setTextColor(102, 126, 234);
+    doc.text("Family Details", 20, yPos);
+    yPos += 8;
+    
+    addField("Family Members", client.familyMembers?.toString() || "Not provided");
+    
+    // Footer
+    yPos += 10;
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, yPos, { align: "center" });
+    
+    // Save PDF
+    doc.save(`${client.clientName}_Details.pdf`);
+    toast.success("PDF downloaded successfully! ✅");
+  };
+
   const handleEditStart = () => {
     setEditData({ ...client });
     setNewPhotoPreview(null);
@@ -49,11 +156,9 @@ const ClientDetail = () => {
     });
   };
 
-  // ✅ Camera se naya photo capture karne ke liye
   const handleNewPhotoCapture = (file) => {
     setEditData({ ...editData, photo: file });
 
-    // Preview create karo
     const reader = new FileReader();
     reader.onloadend = () => {
       setNewPhotoPreview(reader.result);
@@ -69,9 +174,7 @@ const ClientDetail = () => {
 
       const form = new FormData();
 
-      // ✅ Only non-file fields append karo
       Object.keys(editData).forEach((key) => {
-        // Skip photo, biometric, aur MongoDB fields
         if (
           key !== "photo" &&
           key !== "biometric" &&
@@ -84,17 +187,13 @@ const ClientDetail = () => {
         }
       });
 
-      // ✅ Photo separately handle karo
       if (editData.photo instanceof File) {
-        // Naya photo uploaded hai
         form.append("photo", editData.photo);
         console.log("✅ Uploading NEW photo file");
       } else {
-        // Purana photo hai - DON'T append (backend pe already hai)
         console.log("⏭️ Keeping existing photo");
       }
 
-      // Optional: Biometric
       if (editData.biometric instanceof File) {
         form.append("biometric", editData.biometric);
       }
@@ -108,7 +207,6 @@ const ClientDetail = () => {
       setNewPhotoPreview(null);
       toast.success("✅ Client updated successfully");
 
-      // Refresh to show updated data
       fetchClientDetail();
     } catch (err) {
       console.error("Error updating client:", err);
@@ -158,10 +256,6 @@ const ClientDetail = () => {
     );
   }
 
-  // const photoUrl = client.photo
-  //   ? `${VITE_BASE_URL}/${client.photo.replace(/\\/g, "/")}`
-  //   : null;
-
   const photoUrl = client.photo || null;
 
   return (
@@ -174,19 +268,28 @@ const ClientDetail = () => {
               <h2>👤 Client Details</h2>
               <p>{client.clientName}</p>
             </div>
-            <button
-              onClick={() => navigate("/admin")}
-              className="btn-action edit"
-            >
-              ← Back
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {/* ✅ PDF Download Button */}
+              <button
+                onClick={handleDownloadPDF}
+                className="btn-action edit"
+                style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white' }}
+              >
+                📄 Download PDF
+              </button>
+              <button
+                onClick={() => navigate("/admin")}
+                className="btn-action edit"
+              >
+                ← Back
+              </button>
+            </div>
           </div>
 
           <div className="client-detail-container">
             {/* Photo Section - LEFT SIDE */}
             <div className="detail-photo-section">
               {!isEditing ? (
-                // View Mode
                 photoUrl ? (
                   <div>
                     <h4
@@ -201,6 +304,7 @@ const ClientDetail = () => {
                       src={photoUrl}
                       alt={client.clientName}
                       className="client-photo"
+                      crossOrigin="anonymous"
                       onError={(e) => {
                         e.target.src =
                           'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="%23ddd" width="300" height="300"/><text x="50%" y="50%" text-anchor="middle" fill="%23999">No Photo</text></svg>';
@@ -224,7 +328,6 @@ const ClientDetail = () => {
                   </div>
                 )
               ) : (
-                // Edit Mode - Show preview
                 <div>
                   <h4
                     style={{
@@ -324,6 +427,7 @@ const ClientDetail = () => {
               ) : (
                 <>
                   <div className="form-grid">
+                    {/* Edit form fields - same as before */}
                     <div className="form-group">
                       <label>Client Name</label>
                       <input
@@ -428,7 +532,6 @@ const ClientDetail = () => {
                     </div>
                   </div>
 
-                  {/* ✅ Camera Input for capturing new photo */}
                   <div style={{ marginTop: "20px" }}>
                     <CameraInput
                       label="Capture New Photo"
@@ -452,7 +555,7 @@ const ClientDetail = () => {
                       onClick={handleSaveEdit}
                       disabled={loading}
                     >
-                      {loading ? "Saving form..." : "💾 Save"}
+                      {loading ? "Saving..." : "💾 Save"}
                     </button>
                   </div>
                 </>

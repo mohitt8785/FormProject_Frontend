@@ -120,7 +120,7 @@ const ClientDetail = () => {
     addField("Email", client.email);
     addField("Phone", client.phone);
     addField("Address", client.address);
-    addField("Country", client.country);
+    addField("Nationality", client.Nationality);
     
     yPos += 5;
     
@@ -390,8 +390,8 @@ const ClientDetail = () => {
                       <p>{client.phone}</p>
                     </div>
                     <div className="info-item">
-                      <label>Country</label>
-                      <p>{client.country}</p>
+                      <label>Nationality</label>
+                      <p>{client.Nationality}</p>
                     </div>
                     <div className="info-item">
                       <label>Gender</label>
@@ -469,12 +469,12 @@ const ClientDetail = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Country</label>
+                      <label>Nationality</label>
                       <input
                         type="text"
-                        value={editData.country}
+                        value={editData.Nationality}
                         onChange={(e) =>
-                          handleInputChange("country", e.target.value)
+                          handleInputChange("Nationality", e.target.value)
                         }
                       />
                     </div>

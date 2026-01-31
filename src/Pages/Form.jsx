@@ -19,7 +19,7 @@ const FormContent = () => {
     phone: "",
     email: "",
     address: "",
-    country: "",
+    Nationality: "",
     familyMembers: "",
     photo: null,
   });
@@ -198,9 +198,9 @@ const FormContent = () => {
       newErrors.address = "Address should be more detailed";
     }
 
-    // Country
-    if (!formData.country.trim()) {
-      newErrors.country = "Country is required";
+    // Nationality
+    if (!formData.Nationality.trim()) {
+      newErrors.Nationality = "Nationality is required";
     }
 
     // Family Members (optional but validate if provided)
@@ -268,7 +268,7 @@ const FormContent = () => {
           phone: "",
           email: "",
           address: "",
-          country: "",
+          Nationality: "",
           familyMembers: "",
           photo: null,
         });
@@ -448,16 +448,16 @@ const FormContent = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Country *</label>
+                  <label>Nationality *</label>
                   <input
                     type="text"
-                    name="country"
-                    placeholder="Enter country"
-                    value={formData.country}
+                    name="Nationality"
+                    placeholder="Enter Nationality"
+                    value={formData.Nationality}
                     onChange={handleChange}
-                    className={errors.country ? "input-error" : ""}
+                    className={errors.Nationality ? "input-error" : ""}
                   />
-                  {errors.country && <p className="error">{errors.country}</p>}
+                  {errors.Nationality && <p className="error">{errors.Nationality}</p>}
                 </div>
               </div>
             </div>
@@ -507,7 +507,7 @@ const FormContent = () => {
                     phone: "",
                     email: "",
                     address: "",
-                    country: "",
+                    Nationality: "",
                     familyMembers: "",
                     photo: null,
                   });

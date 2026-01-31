@@ -11,7 +11,7 @@ const ClientTable = ({ clients, onEdit, onDelete, formatDate }) => {
             <th>Father Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Country</th>
+            <th>Nationality</th>
             <th>Gender</th>
             <th>Age</th>
             <th>Submitted</th>
@@ -27,7 +27,7 @@ const ClientTable = ({ clients, onEdit, onDelete, formatDate }) => {
               <td>{client.fatherName}</td>
               <td>{client.email}</td>
               <td>{client.phone}</td>
-              <td>{client.country}</td>
+              <td>{client.Nationality}</td>
               <td>{client.gender}</td>
               <td>{client.age}</td>
               <td>{formatDate(client.createdAt)}</td>

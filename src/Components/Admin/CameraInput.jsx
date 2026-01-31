@@ -3,20 +3,31 @@ import Webcam from "react-webcam";
 
 const CameraInput = ({ label, name, setFile, error }) => {
   const webcamRef = useRef(null);
+
   const [preview, setPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
+  const [facingMode, setFacingMode] = useState("environment"); // user | environment
 
   const startCamera = () => setCameraOn(true);
 
+  const switchCamera = () => {
+    setFacingMode((prev) =>
+      prev === "user" ? "environment" : "user"
+    );
+  };
+
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
+
     fetch(imageSrc)
-      .then(res => res.blob())
-      .then(blob => {
-        const file = new File([blob], `${name}.jpg`, { type: "image/jpeg" });
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new File([blob], `${name}.jpg`, {
+          type: "image/jpeg",
+        });
         setFile(file);
         setPreview(imageSrc);
-        setCameraOn(false); // Close camera after capture
+        setCameraOn(false);
       });
   };
 
@@ -35,12 +46,19 @@ const CameraInput = ({ label, name, setFile, error }) => {
           <Webcam
             ref={webcamRef}
             screenshotFormat="image/jpeg"
-            videoConstraints={{ facingMode: "user" }}
+            videoConstraints={{ facingMode }}
             width="100%"
           />
-          <button type="button" onClick={capture}>
-            📸 Capture
-          </button>
+
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <button type="button" onClick={capture}>
+              📸 Capture
+            </button>
+
+            <button type="button" onClick={switchCamera}>
+              🔄 Switch Camera
+            </button>
+          </div>
         </>
       )}
 

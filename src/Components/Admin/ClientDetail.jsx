@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import jsPDF from "jspdf"; // ✅ Import jsPDF
+import jsPDF from "jspdf"; 
 import Navbar from "../Navbar/Navbar.jsx";
 import CameraInput from "./CameraInput.jsx";
 import "./Admin.css";
 
 const VITE_API_URL_FORM = import.meta.env.VITE_API_URL_FORM;
-const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
+// const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const ClientDetail = () => {
   const { id } = useParams();
@@ -39,135 +39,135 @@ const ClientDetail = () => {
 
   // ✅ PDF Download Function
   const handleDownloadPDF = async () => {
-  try {
-    const doc = new jsPDF("p", "mm", "a4");
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
 
-    // ===== HEADER =====
-    doc.setFillColor(102, 126, 234);
-    doc.rect(0, 0, 210, 28, "F");
+      // ===== HEADER =====
+      doc.setFillColor(102, 126, 234);
+      doc.rect(0, 0, 210, 28, "F");
 
-    doc.setFontSize(20);
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.text("CLIENT INFORMATION FORM", 105, 18, { align: "center" });
+      doc.setFontSize(20);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text("GROWTH CLIENT INFORMATION FORM", 105, 18, { align: "center" });
 
-    // Divider
-    doc.setDrawColor(226, 232, 240);
-    doc.line(0, 30, 210, 30);
+      // Divider
+      doc.setDrawColor(226, 232, 240);
+      doc.line(0, 30, 210, 30);
 
-    // ===== PHOTO SECTION (RIGHT SIDE – BIG) =====
-    const photoX = 120;
-    const photoY = 40;
-    const photoWidth = 70;
-    const photoHeight = 90;
+      // ===== PHOTO SECTION (RIGHT SIDE – BIG) =====
+      const photoX = 120;
+      const photoY = 40;
+      const photoWidth = 70;
+      const photoHeight = 90;
 
-    if (client.photo) {
-      try {
-        const response = await fetch(client.photo);
-        const blob = await response.blob();
-        const reader = new FileReader();
+      if (client.photo) {
+        try {
+          const response = await fetch(client.photo);
+          const blob = await response.blob();
+          const reader = new FileReader();
 
-        reader.onloadend = () => {
-          doc.setDrawColor(102, 126, 234);
-          doc.rect(photoX - 2, photoY - 2, photoWidth + 4, photoHeight + 4);
-          doc.addImage(reader.result, "JPEG", photoX, photoY, photoWidth, photoHeight);
+          reader.onloadend = () => {
+            doc.setDrawColor(102, 126, 234);
+            doc.rect(photoX - 2, photoY - 2, photoWidth + 4, photoHeight + 4);
+            doc.addImage(reader.result, "JPEG", photoX, photoY, photoWidth, photoHeight);
+            generatePDFContent(doc);
+          };
+
+          reader.readAsDataURL(blob);
+        } catch {
           generatePDFContent(doc);
-        };
-
-        reader.readAsDataURL(blob);
-      } catch {
+        }
+      } else {
+        doc.setDrawColor(148, 163, 184);
+        doc.rect(photoX, photoY, photoWidth, photoHeight);
+        doc.setFontSize(12);
+        doc.setTextColor(148, 163, 184);
+        doc.text("No Photo", photoX + 22, photoY + 45);
         generatePDFContent(doc);
       }
-    } else {
-      doc.setDrawColor(148, 163, 184);
-      doc.rect(photoX, photoY, photoWidth, photoHeight);
-      doc.setFontSize(12);
-      doc.setTextColor(148, 163, 184);
-      doc.text("No Photo", photoX + 22, photoY + 45);
-      generatePDFContent(doc);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("❌ PDF generation failed");
     }
-
-  } catch (error) {
-    console.error(error);
-    toast.error("❌ PDF generation failed");
-  }
-};
-
-const generatePDFContent = (doc) => {
-  let y = 45;
-
-  const labelX = 20;
-  const valueX = 55;
-
-  const addRow = (label, value) => {
-    doc.setFontSize(10);
-    doc.setTextColor(100, 116, 139);
-    doc.text(label, labelX, y);
-
-    doc.setFontSize(11);
-    doc.setTextColor(30, 41, 59);
-    doc.text(value || "N/A", valueX, y);
-
-    y += 9;
   };
 
-  // ===== LEFT FORM BORDER =====
-  doc.setDrawColor(226, 232, 240);
-  doc.rect(15, 38, 95, 120);
+  const generatePDFContent = (doc) => {
+    let y = 45;
 
-  // ===== SECTION TITLE =====
-  doc.setFontSize(14);
-  doc.setTextColor(102, 126, 234);
-  doc.setFont("helvetica", "bold");
-  doc.text("Personal Details", 20, y);
-  y += 10;
+    const labelX = 20;
+    const valueX = 55;
 
-  doc.setFont("helvetica", "normal");
+    const addRow = (label, value) => {
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(label, labelX, y);
 
-  addRow("Client Name", client.clientName);
-  addRow("Father Name", client.fatherName);
-  addRow("Father Phone", client.fatherPhone);
-  addRow("Gender", client.gender);
-  addRow(
-    "DOB",
-    client.dob ? new Date(client.dob).toLocaleDateString() : "N/A"
-  );
-  addRow("Age", client.age?.toString());
-  addRow("Relationship", client.relationship);
-  addRow("Occupation", client.occupation);
+      doc.setFontSize(11);
+      doc.setTextColor(30, 41, 59);
+      doc.text(value || "N/A", valueX, y);
 
-  y += 6;
+      y += 9;
+    };
 
-  // ===== CONTACT DETAILS =====
-  doc.setFontSize(14);
-  doc.setTextColor(102, 126, 234);
-  doc.setFont("helvetica", "bold");
-  doc.text("Contact Details", 20, y);
-  y += 10;
+    // ===== LEFT FORM BORDER =====
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(15, 38, 95, 120);
 
-  doc.setFont("helvetica", "normal");
+    // ===== SECTION TITLE =====
+    doc.setFontSize(14);
+    doc.setTextColor(102, 126, 234);
+    doc.setFont("helvetica", "bold");
+    doc.text("Personal Details", 20, y);
+    y += 10;
 
-  addRow("Email", client.email);
-  addRow("Phone", client.phone);
-  addRow("Nationality", client.Nationality);
-  addRow("Address", client.address);
+    doc.setFont("helvetica", "normal");
 
-  // ===== FOOTER =====
-  doc.setDrawColor(226, 232, 240);
-  doc.line(20, 265, 190, 265);
+    addRow("Client Name", client.clientName);
+    addRow("Father Name", client.fatherName);
+    addRow("Father Phone", client.fatherPhone);
+    addRow("Gender", client.gender);
+    addRow(
+      "DOB",
+      client.dob ? new Date(client.dob).toLocaleDateString() : "N/A"
+    );
+    addRow("Age", client.age?.toString());
+    addRow("Relationship", client.relationship);
+    addRow("Occupation", client.occupation);
 
-  doc.setFontSize(9);
-  doc.setTextColor(148, 163, 184);
-  doc.text(
-    `Generated on ${new Date().toLocaleString()}`,
-    105,
-    272,
-    { align: "center" }
-  );
+    y += 6;
 
-  doc.save(`${client.clientName}_Client_Form.pdf`);
-  toast.success("📄 Professional PDF downloaded!");
-};
+    // ===== CONTACT DETAILS =====
+    doc.setFontSize(14);
+    doc.setTextColor(102, 126, 234);
+    doc.setFont("helvetica", "bold");
+    doc.text("Contact Details", 20, y);
+    y += 10;
+
+    doc.setFont("helvetica", "normal");
+
+    addRow("Email", client.email);
+    addRow("Phone", client.phone);
+    addRow("Nationality", client.Nationality);
+    addRow("Address", client.address);
+
+    // ===== FOOTER =====
+    doc.setDrawColor(226, 232, 240);
+    doc.line(20, 265, 190, 265);
+
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `Generated on ${new Date().toLocaleString()}`,
+      105,
+      272,
+      { align: "center" }
+    );
+
+    doc.save(`${client.clientName}_Client_Form.pdf`);
+    toast.success("📄 Professional PDF downloaded!");
+  };
 
 
   const handleEditStart = () => {
@@ -257,7 +257,7 @@ const generatePDFContent = (doc) => {
       console.error("Error updating client:", err);
       toast.error(
         "❌ Failed to update client: " +
-          (err.response?.data?.message || err.message),
+        (err.response?.data?.message || err.message),
       );
     } finally {
       setLoading(false);

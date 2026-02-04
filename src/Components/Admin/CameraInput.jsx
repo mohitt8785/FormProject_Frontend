@@ -51,13 +51,17 @@ const CameraInput = ({ label, name, setFile, error }) => {
           />
 
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            <button type="button" onClick={capture} className="capture-btn">
-              📸 Capture
-            </button>
 
             <button type="button" onClick={switchCamera} className="switch-btn">
               🔄 Switch Camera
             </button>
+
+            
+            <button type="button" onClick={capture} className="capture-btn">
+              📸 Capture
+            </button>
+
+    
           </div>
         </>
       )}

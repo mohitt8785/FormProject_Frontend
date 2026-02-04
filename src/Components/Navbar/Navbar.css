@@ -480,12 +480,21 @@
     }
     
     .navbar {
-        height: 64px;
+        height: 60px;
     }
     
     .mobile-menu {
         width: 100%;
-        max-width: 340px;
+        max-width: 300px;
+    }
+
+     .mobile-menu-header {
+        padding: 10px;
+    }
+
+     .logout-btn {
+        padding: 5px 10px;
+        font-size: 10px;
     }
 }
 
@@ -510,7 +519,7 @@
     }
     
     .mobile-menu-header {
-        padding: 20px;
+        padding: 10px;
     }
     
     .mobile-links {

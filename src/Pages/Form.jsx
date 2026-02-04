@@ -30,26 +30,26 @@ const FormContent = () => {
 
   // Supported file types for photo
   const SUPPORTED_IMAGE_TYPES = [
-    'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
+    'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
     'image/gif', 'image/bmp', 'image/tiff'
   ];
 
   // Calculate age from DOB
   const calculateAgeFromDOB = (dob) => {
     if (!dob) return "";
-    
+
     const birthDate = new Date(dob);
     const today = new Date();
-    
+
     if (isNaN(birthDate.getTime())) return "";
-    
+
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age > 0 ? age.toString() : "";
   };
 
@@ -108,12 +108,12 @@ const FormContent = () => {
     // Validate photo file
     if (name === 'photo' && files && files[0]) {
       const file = files[0];
-      
+
       // Check file type
       if (!SUPPORTED_IMAGE_TYPES.includes(file.type)) {
         setErrors(prev => ({ ...prev, photo: "Photo must be an image (JPEG, PNG, GIF, BMP, TIFF, WEBP)" }));
       }
-      
+
       // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setErrors(prev => ({ ...prev, photo: "Photo size must be less than 5MB" }));
@@ -124,16 +124,16 @@ const FormContent = () => {
   // PHONE INPUT WITH FORMATTING for fatherPhone
   const handleFatherPhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, '').substring(0, 10);
-    
+
     const rawDigits = value;
-    
+
     // Auto-format display
     if (value.length > 6) {
       value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
     } else if (value.length > 3) {
       value = value.replace(/(\d{3})(\d{1,3})/, '$1-$2');
     }
-    
+
     setFormData(prev => ({ ...prev, fatherPhone: rawDigits }));
     setErrors(prev => ({ ...prev, fatherPhone: "" }));
 
@@ -147,16 +147,16 @@ const FormContent = () => {
   // PHONE INPUT WITH FORMATTING for phone
   const handlePhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, '').substring(0, 10);
-    
+
     const rawDigits = value;
-    
+
     // Auto-format display
     if (value.length > 6) {
       value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
     } else if (value.length > 3) {
       value = value.replace(/(\d{3})(\d{1,3})/, '$1-$2');
     }
-    
+
     setFormData(prev => ({ ...prev, phone: rawDigits }));
     setErrors(prev => ({ ...prev, phone: "" }));
 
@@ -194,7 +194,7 @@ const FormContent = () => {
     if (formData.dob) {
       const dobDate = new Date(formData.dob);
       const today = new Date();
-      
+
       if (dobDate > today) {
         newErrors.dob = "Date of birth cannot be in the future";
       }
@@ -213,9 +213,7 @@ const FormContent = () => {
     }
 
     // Email
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else {
+    if (formData.email.trim()) {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(formData.email.trim())) {
         newErrors.email = "Please enter a valid email address";
@@ -223,9 +221,7 @@ const FormContent = () => {
     }
 
     // Address
-    if (!formData.address.trim()) {
-      newErrors.address = "Address is required";
-    } else if (formData.address.trim().length < 10) {
+    if (formData.address.trim() && formData.address.trim().length < 4) {
       newErrors.address = "Address should be more detailed";
     }
 
@@ -252,7 +248,7 @@ const FormContent = () => {
       if (!SUPPORTED_IMAGE_TYPES.includes(formData.photo.type)) {
         newErrors.photo = "Photo must be an image (JPEG, PNG, GIF, BMP, TIFF, WEBP)";
       }
-      
+
       if (formData.photo.size > 5 * 1024 * 1024) {
         newErrors.photo = "Photo size must be less than 5MB";
       }
@@ -288,10 +284,10 @@ const FormContent = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
         timeout: 30000,
       });
-      
+
       if (response.data.success) {
         toast.success("✅ Client information saved successfully!");
-        
+
         // Reset form
         setFormData({
           clientName: "",
@@ -307,9 +303,9 @@ const FormContent = () => {
           occupation: "",
           photo: null,
         });
-        
+
         setErrors({});
-        
+
         // Clear file input
         document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
       }
@@ -322,12 +318,12 @@ const FormContent = () => {
   };
 
   // Format phone for display
-  const displayPhone = formData.phone ? 
-    formData.phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') : 
+  const displayPhone = formData.phone ?
+    formData.phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') :
     '';
 
-  const displayFatherPhone = formData.fatherPhone ? 
-    formData.fatherPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') : 
+  const displayFatherPhone = formData.fatherPhone ?
+    formData.fatherPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') :
     '';
 
   return (
@@ -343,7 +339,7 @@ const FormContent = () => {
           <form onSubmit={handleSubmit} className="form" noValidate>
             <div className="form-section">
               <h3 className="section-title">Personal Information</h3>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label>Client Name *</label>
@@ -484,7 +480,7 @@ const FormContent = () => {
 
             <div className="form-section">
               <h3 className="section-title">Contact Information</h3>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label>Phone Number *</label>
@@ -548,7 +544,7 @@ const FormContent = () => {
 
             <div className="form-section">
               <h3 className="section-title">Photo</h3>
-              
+
               <CameraInput
                 label="Live Photo *"
                 name="photo"
@@ -563,9 +559,9 @@ const FormContent = () => {
             </div>
 
             <div className="form-actions">
-              <button 
-                type="submit" 
-                className={`submit-btn ${loading ? 'loading' : ''}`} 
+              <button
+                type="submit"
+                className={`submit-btn ${loading ? 'loading' : ''}`}
                 disabled={loading}
               >
                 {loading ? (
@@ -577,9 +573,9 @@ const FormContent = () => {
                   "✅ Save Client Information"
                 )}
               </button>
-              
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 className="clear-btn"
                 onClick={() => {
                   setFormData({

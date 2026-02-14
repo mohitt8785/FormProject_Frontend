@@ -575,8 +575,8 @@ const ClientDetail = () => {
         <div className="admin-container">
           <div className="admin-header">
             <div>
-              <h2>👤 Client Details</h2>
-              <p>{client.clientName} {client.surname}</p>
+              <h2>👤 {client.clientName} {client.surname}</h2>
+              <p>Client Details</p>
             </div>
             <div className="header-buttons">
               <button

@@ -454,9 +454,9 @@ const FormContent = () => {
             {/* Row 4 — Country + Nationality */}
             <div className="form-row">
               <div className="form-group">
-                <label>Country</label>
+                <label className="optional">Country</label>
                 <input name="country" placeholder="Enter country" value={formData.country}
-                  onChange={handleChange} required />
+                  onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label>Nationality</label>

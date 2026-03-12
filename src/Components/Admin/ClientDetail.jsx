@@ -433,7 +433,7 @@ const ClientDetail = () => {
       }
 
       doc.save(`${client.clientName || "Client"}_Complete_Form.pdf`);
-      toast.success(`📄 PDF downloaded with ${client.documents?.length || 0} documents!`);
+      toast.success(`📄 PDF Downloaded With ${client.documents?.length || 0} Documents!`);
     } catch (error) {
       console.error("PDF Error:", error);
       toast.error("❌ PDF generation failed: " + error.message);

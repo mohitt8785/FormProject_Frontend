@@ -55,7 +55,7 @@ const ClientDetail = () => {
 
   const handleDownloadPDF = async () => {
     try {
-      toast.info("📄 Generating comprehensive PDF...");
+      // toast.info("📄 Generating comprehensive PDF...");
       const doc = new jsPDF("p", "mm", "a4");
       // A4 = 210mm x 297mm
       let currentPage = 1;

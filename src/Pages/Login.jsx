@@ -12,26 +12,37 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
-  const SESSION_TIMEOUT = 12 * 60 * 60 * 1000; // 12 hours
+  // const SESSION_TIMEOUT = 12 * 60 * 60 * 1000; // 12 hours
   const STATIC_EMAIL = "01growth.project@gmail.com";
 
   // Check existing session
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const loginTime = localStorage.getItem("loginTime");
+
+  //   if (token && loginTime) {
+  //     const timeElapsed = Date.now() - parseInt(loginTime);
+  //     if (timeElapsed < SESSION_TIMEOUT) {
+  //       navigate("/home");
+  //     } else {
+  //       localStorage.clear();
+  //       toast.warning("Session expired. Please login again.");
+  //     }
+  //   }
+  // }, [navigate]);
+
+  // Check existing login session
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const loginTime = localStorage.getItem("loginTime");
+    if (token) {
+      navigate("/home");
 
-    if (token && loginTime) {
-      const timeElapsed = Date.now() - parseInt(loginTime);
-      if (timeElapsed < SESSION_TIMEOUT) {
-        navigate("/home");
-      } else {
-        localStorage.clear();
-        toast.warning("Session expired. Please login again.");
-      }
     }
   }, [navigate]);
 
   // Resend timer countdown
+
   useEffect(() => {
     if (resendTimer > 0) {
       const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
@@ -81,7 +92,7 @@ const Login = () => {
       const res = await Api.post("/verify-otp", { email, otp });
 
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("loginTime", Date.now().toString());
+      // localStorage.setItem("loginTime", Date.now().toString());
 
       toast.success("Login successful! ✅");
 

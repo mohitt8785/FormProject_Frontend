@@ -958,7 +958,7 @@ const FormContent = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmitt} className="form">
+          <form onSubmit={handleSubmit} className="form">
             {renderStepContent()}
             <div className="form-actions">
               {currentStep > 1 && (
